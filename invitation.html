@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Personal Invitation - Zen Hardin's 1st Birthday</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/jpeg" href="favicon.jpg">
+    <link rel="apple-touch-icon" href="favicon.jpg">
+    <style>
+        body { overflow: auto; } /* Allow scrolling on this page */
+        .invitation-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .rsvp-card {
+            max-width: 800px; /* Increased from 600px */
+            padding: 5rem; /* Increased padding */
+        }
+        .section-title { font-size: clamp(2.5rem, 6vw, 4rem); } /* Larger title */
+        .hero-subtitle { font-size: 1.4rem; margin-bottom: 2.5rem; }
+        .details-grid p { font-size: 1.3rem; line-height: 1.8; }
+        #rsvp-step-1 h2, #rsvp-step-car h2, #rsvp-step-wish h2 { font-size: 2.2rem; }
+        .btn-primary, .btn-secondary { 
+            font-size: 1.2rem; 
+            padding: 1.2rem 3rem; 
+        }
+        #guest-wish {
+            font-size: 1.1rem;
+            height: 150px;
+        }
+        #final-text { font-size: 1.4rem; line-height: 1.4; }
+        
+        @media (max-width: 768px) {
+            .rsvp-card { padding: 3rem 1.5rem; }
+            .section-title { font-size: 2.2rem; }
+            .hero-subtitle { font-size: 1.1rem; }
+            .details-grid p { font-size: 1.1rem; }
+            #rsvp-step-1 h2, #rsvp-step-car h2, #rsvp-step-wish h2 { font-size: 1.6rem; }
+            .btn-primary, .btn-secondary { font-size: 1rem; padding: 1rem 2rem; }
+            #final-text { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="sparkles-container"></div>
+
+    <div class="invitation-page">
+        <div class="rsvp-card fade-in">
+            <h1 class="section-title">Hello <span id="guest-name-display">Guest</span>!</h1>
+            <p class="hero-subtitle">You are cordially invited to celebrate Zen Hardin's Christening and 1st Birthday.</p>
+            
+            <div style="margin-top: 2rem; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                <p><strong>Date:</strong> May 23, 2026</p>
+                <p><strong>Church:</strong> Paco Park Church @ 10:30 AM</p>
+                <p><strong>Party:</strong> A - Venue Events Place @ 12:00 PM to 2:00 PM</p>
+            </div>
+
+            <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--color-bg-light);">
+
+            <div id="rsvp-step-1">
+                <h2 style="font-family: var(--font-heading); margin-bottom: 1.5rem; text-align: center;">Can you come?</h2>
+                <div class="rsvp-buttons">
+                    <button id="btn-attend-yes" class="btn-primary">Yes, I'll be there!</button>
+                    <button id="btn-attend-no" class="btn-secondary">Regretfully, I can't</button>
+                </div>
+            </div>
+
+            <div id="rsvp-step-car" style="display: none; margin-top: 2rem; text-align: center;">
+                <h2 style="font-family: var(--font-heading); margin-bottom: 1.5rem;">Will you be bringing a car?</h2>
+                <div class="rsvp-buttons">
+                    <button id="btn-car-yes" class="btn-primary">Yes</button>
+                    <button id="btn-car-no" class="btn-secondary">No</button>
+                </div>
+            </div>
+
+            <div id="rsvp-step-wish" style="display: none; margin-top: 2rem; text-align: center;">
+                <h2 style="font-family: var(--font-heading); margin-bottom: 1rem;">Wishes for Zen</h2>
+                <p style="font-size: 0.9rem; margin-bottom: 1rem; opacity: 0.8;">Leave a short message or birthday wish for our little one! 🧸</p>
+                <textarea id="guest-wish" placeholder="Write your message here..." style="width: 100%; height: 100px; padding: 1rem; border-radius: 25px; border: 1px solid #ddd; font-family: var(--font-body); margin-bottom: 1rem; resize: none; text-align: center;"></textarea>
+                <button id="btn-submit-wish" class="btn-primary" style="width: 100%;">Submit Response and Message</button>
+            </div>
+
+            <div id="rsvp-final-message" style="display: none; margin-top: 2rem; text-align: center;">
+                <h3 id="final-text">Thank you for your response!</h3>
+                <div id="final-icon" style="font-size: 3rem; margin-top: 1rem;">🧸</div>
+                <div id="next-page-container" style="display: none; margin-top: 2rem; text-align: center;">
+                    <a href="colors.html" class="btn-primary">Next: Dress Code</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://qbhcgffxveyyjkpplyui.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFiaGNnZmZ4dmV5eWprcHBseXVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3NDA5NDIsImV4cCI6MjA5MzMxNjk0Mn0.G767Fw_ueZpEDo5mByvxVy07AyASA-kMdTnoswG23MQ';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const guestName = urlParams.get('name');
+        const guestCategory = urlParams.get('category') || 'Guest';
+        
+        if (guestName) {
+            document.getElementById('guest-name-display').innerText = `${guestCategory} ${guestName}`;
+        }
+
+        const step1 = document.getElementById('rsvp-step-1');
+        const stepCar = document.getElementById('rsvp-step-car');
+        const stepWish = document.getElementById('rsvp-step-wish');
+        const finalMessage = document.getElementById('rsvp-final-message');
+        const finalText = document.getElementById('final-text');
+        const finalIcon = document.getElementById('final-icon');
+        const nextPageContainer = document.getElementById('next-page-container');
+
+        let rsvpState = { attending: null, car: null };
+
+        async function saveRSVP(attending, car = null, wish = "") {
+            const { data, error } = await _supabase
+                .from('rsvps')
+                .upsert({ 
+                    guest_name: guestName, 
+                    category: guestCategory, 
+                    attending: attending, 
+                    car: car, 
+                    wish: wish 
+                }, { onConflict: 'guest_name' });
+            
+            if (error) console.error('Supabase Error:', error);
+        }
+
+        // Attend Yes
+        document.getElementById('btn-attend-yes').addEventListener('click', () => {
+            rsvpState.attending = 'Yes';
+            step1.style.display = 'none';
+            stepCar.style.display = 'block';
+        });
+
+        // Attend No
+        document.getElementById('btn-attend-no').addEventListener('click', () => {
+            rsvpState.attending = 'No';
+            rsvpState.car = 'No';
+            step1.style.display = 'none';
+            stepWish.style.display = 'block';
+        });
+
+        // Car Yes
+        document.getElementById('btn-car-yes').addEventListener('click', () => {
+            rsvpState.car = 'Yes';
+            stepCar.style.display = 'none';
+            stepWish.style.display = 'block';
+        });
+
+        // Car No
+        document.getElementById('btn-car-no').addEventListener('click', () => {
+            rsvpState.car = 'No';
+            stepCar.style.display = 'none';
+            stepWish.style.display = 'block';
+        });
+
+        // Submit Wish & Finalize
+        document.getElementById('btn-submit-wish').addEventListener('click', () => {
+            const wishText = document.getElementById('guest-wish').value.trim();
+            saveRSVP(rsvpState.attending, rsvpState.car, wishText);
+
+            stepWish.style.display = 'none';
+            finalMessage.style.display = 'block';
+
+            if (rsvpState.attending === 'Yes') {
+                finalText.innerText = rsvpState.car === 'Yes' 
+                    ? "Noted! We've reserved a parking slot for you. See you there!"
+                    : "Thank you! We can't wait to see you!";
+                finalIcon.innerText = rsvpState.car === 'Yes' ? '🚗' : '🎉';
+                
+                // Update link to pass category
+                const dressCodeLink = document.querySelector('#next-page-container a');
+                dressCodeLink.href = `colors.html?category=${encodeURIComponent(guestCategory)}`;
+                
+                nextPageContainer.style.display = 'block';
+            } else {
+                finalText.innerText = `Its okay ${guestCategory}, I understand. We'll miss you!`;
+                finalIcon.innerText = '🤍';
+                nextPageContainer.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

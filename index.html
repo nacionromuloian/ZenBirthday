@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen Hardin's 1st Birthday & Christening</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/jpeg" href="favicon.jpg">
+    <link rel="apple-touch-icon" href="favicon.jpg">
+</head>
+<body>
+    <div id="sparkles-container"></div>
+    <div id="bouncing-bears-container"></div>
+
+    <section id="home" class="hero">
+        <div class="hero-content fade-in">
+            <h3 class="hero-pretitle">You're Invited!</h3>
+            <h1 class="hero-title">Christening and 1st Birthday Celebration</h1>
+            <h2 class="hero-name">Zen Hardin Nacion</h2>
+            <p class="hero-subtitle">Join us as we celebrate this special milestone filled with love, blessings, and joy.</p>
+            
+            <div id="countdown" class="countdown">
+                <div class="countdown-item">
+                    <span id="days">00</span>
+                    <label>Days</label>
+                </div>
+                <div class="countdown-item">
+                    <span id="hours">00</span>
+                    <label>Hours</label>
+                </div>
+                <div class="countdown-item">
+                    <span id="minutes">00</span>
+                    <label>Mins</label>
+                </div>
+                <div class="countdown-item">
+                    <span id="seconds">00</span>
+                    <label>Secs</label>
+                </div>
+            </div>
+
+        </div>
+        <div class="hero-image fade-in">
+            <!-- Teddy bear placeholder -->
+            <div class="teddy-bear-illust">
+                <div class="bear-head">
+                    <div class="ear left"></div>
+                    <div class="ear right"></div>
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="nose"></div>
+                    <div class="mouth"></div>
+                </div>
+                <div class="bear-body"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="details" class="section">
+        <div class="container fade-in">
+            <h2 class="section-title">Event Details</h2>
+            <div class="details-grid">
+                <div class="detail-card">
+                    <div class="icon">🕊️</div>
+                    <h3>Christening</h3>
+                    <p class="detail-time">10:30 AM</p>
+                    <p class="detail-venue"><strong>Paco Park Church</strong></p>
+                    <p>Paco Park Belen, Paco, Manila</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=St.+Pancratius+Chapel+HXJQ%2B99M+959+Belen+Paco+Manila" target="_blank" class="btn-secondary" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.8rem;">Get Directions</a>
+                </div>
+                <div class="detail-card">
+                    <div class="icon">🎂</div>
+                    <h3>Birthday Party</h3>
+                    <p class="detail-time">12:00 PM to 2:00 PM</p>
+                    <p class="detail-venue"><strong>A - Venue Events Place</strong></p>
+                    <p>1500 AP Building Perdigon Street</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=A-venue+Events+Place+1500+Perdigon+Street+Paco+Manila" target="_blank" class="btn-secondary" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.8rem;">Get Directions</a>
+                </div>
+                <div class="detail-card">
+                    <div class="icon">🗓️</div>
+                    <h3>Date</h3>
+                    <p class="detail-date">MAY 23, 2026</p>
+                    <p>Mark your calendars!</p>
+                </div>
+                <div class="detail-card">
+                    <div class="icon">🍴</div>
+                    <h3>Reception</h3>
+                    <p class="detail-venue"><strong>A - Venue Events Place</strong></p>
+                    <p>Lunch and celebration to follow</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="section alt-bg">
+        <div id="bouncing-bears-container"></div>
+        <div class="container fade-in">
+            <h2 class="section-title">Little Moments</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item"><img src="ChatGPT Image May 3, 2026, 01_24_36 AM.png" alt="Zen Moment 1"></div>
+                <div class="gallery-item"><img src="ChatGPT Image May 3, 2026, 01_25_01 AM.png" alt="Zen Moment 2"></div>
+                <div class="gallery-item"><img src="ChatGPT Image May 3, 2026, 01_25_10 AM.png" alt="Zen Moment 3"></div>
+                <div class="gallery-item"><img src="679121048_969584372380483_1577476865268880100_n.jpg" alt="Zen Moment 4"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="verification" class="section">
+        <div class="container fade-in" style="display: flex; flex-direction: column; align-items: center;">
+            <h2 class="section-title">Find Your Invitation</h2>
+            <div class="rsvp-card">
+                <p class="rsvp-subtitle">Please select your name and enter your surname to proceed.</p>
+                <form id="verification-form" class="rsvp-form">
+                    <div class="form-group">
+                        <input type="text" id="firstname-input" placeholder="Enter First Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="surname-input" placeholder="Enter Surname" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Verify & Open Invitation</button>
+                    <p id="verification-error" style="color: #8b0000; margin-top: 1rem; display: none;">Incorrect surname. Please try again.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>Made with love for Zen Hardin Nacion</p>
+    </footer>
+
+    <button id="next-slide" class="btn-next-slide" aria-label="Next Page">
+        <span>Next</span>
+        <div class="arrow"></div>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>

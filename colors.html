@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dress Code - Zen Hardin's 1st Birthday</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/jpeg" href="favicon.jpg">
+    <link rel="apple-touch-icon" href="favicon.jpg">
+    <style>
+        body { overflow: auto; }
+        .colors-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .modal-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-card h2 { font-family: var(--font-heading); color: var(--color-primary); margin-bottom: 1.5rem; }
+        .modal-card p { font-size: 1.2rem; line-height: 1.6; margin-bottom: 2rem; }
+        
+        .color-swatch-container {
+            display: grid;
+            grid-template-areas: 
+                "top top"
+                "bottom-left bottom-right";
+            justify-content: center;
+            gap: 1.5rem 3rem; /* Reduced row gap (1.5rem), wider column gap (3rem) */
+            margin-top: 2rem;
+        }
+        .color-item.top {
+            grid-area: top;
+            justify-self: center;
+            margin-bottom: -0.5rem; /* Pull bottom row closer */
+        }
+        .color-item.bottom-left {
+            grid-area: bottom-left;
+        }
+        .color-item.bottom-right {
+            grid-area: bottom-right;
+        }
+        .color-item {
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .color-circle {
+            width: 150px; /* Increased from 120px */
+            height: 150px; /* Increased from 120px */
+            border-radius: 50%;
+            margin-bottom: 0.8rem;
+            border: 6px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            filter: grayscale(0.3) opacity(0.8);
+        }
+        .color-item:hover .color-circle {
+            transform: scale(1.2);
+            filter: grayscale(0) opacity(1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .color-name {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            color: var(--color-primary);
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        .color-item:hover .color-name {
+            opacity: 1;
+        }
+        
+        .sage-green { background-color: #98A67E; }
+        .butter-yellow { background-color: #F3E5AB; }
+        .warm-brown { background-color: #A67C52; }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 3rem;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="sparkles-container"></div>
+
+    <div class="colors-page">
+        <div class="rsvp-card fade-in">
+            <h1 class="section-title">What to Wear?</h1>
+            <p class="hero-subtitle">We would love to see everyone in our theme colors! Please consider wearing any of the following shades:</p>
+            
+            <div class="color-swatch-container">
+                <div class="color-item top">
+                    <div class="color-circle sage-green"></div>
+                    <p class="color-name">Sage Green</p>
+                </div>
+                <div class="color-item bottom-left">
+                    <div class="color-circle butter-yellow"></div>
+                    <p class="color-name">Butter Yellow</p>
+                </div>
+                <div class="color-item bottom-right">
+                    <div class="color-circle warm-brown"></div>
+                    <p class="color-name">Warm Brown</p>
+                </div>
+            </div>
+
+            <p style="margin-top: 3rem; font-style: italic; opacity: 0.8;">Dress Code: Semi-Formal / Casual</p>
+            
+            <div style="margin-top: 3rem; display: flex; justify-content: center; gap: 2rem; align-items: center; flex-wrap: wrap;">
+                <a href="index.html" class="back-link" style="margin-top: 0;">← Back to Invitation Details</a>
+                <button id="btn-show-gifts" class="btn-primary">View Gift Guide 🎁</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal HTML -->
+    <div id="policy-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h2>Important Note 🧸</h2>
+            <p id="policy-text">Note: Strictly No Plus 1, <span id="category-display">Guest</span>. Thank you.</p>
+            <button id="btn-modal-proceed" class="btn-primary" style="width: 100%;">I Understand, Proceed</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category') || 'Guest';
+        document.getElementById('category-display').innerText = category;
+
+        const modal = document.getElementById('policy-modal');
+        const showGiftsBtn = document.getElementById('btn-show-gifts');
+        const proceedBtn = document.getElementById('btn-modal-proceed');
+
+        showGiftsBtn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+        });
+
+        proceedBtn.addEventListener('click', () => {
+            window.location.href = 'gifts.html';
+        });
+
+        // Close modal if clicking overlay
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

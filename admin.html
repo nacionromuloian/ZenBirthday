@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Zen Hardin's 1st Birthday</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/jpeg" href="favicon.jpg">
+    <link rel="apple-touch-icon" href="favicon.jpg">
+    <style>
+        body { overflow: auto; }
+        .admin-page {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .stat-card h3 { font-size: 0.8rem; opacity: 0.7; text-transform: uppercase; }
+        .stat-card p { font-size: 1.5rem; font-weight: 600; color: var(--color-primary); }
+
+        @media (max-width: 768px) {
+            .admin-page { padding: 2rem 1rem; }
+            .admin-header { text-align: center; justify-content: center; }
+            .category-header h2 { font-size: 1.1rem; }
+            th, td { padding: 0.8rem 0.5rem; font-size: 0.85rem; }
+            .badge { padding: 0.3rem 0.6rem; font-size: 0.75rem; }
+        }
+
+        .controls-row {
+            display: flex; gap: 1rem; margin-bottom: 2rem; align-items: center; flex-wrap: wrap;
+        }
+        .search-container { flex: 1; min-width: 300px; }
+        .search-input {
+            width: 100%; padding: 1rem 1.5rem; border-radius: 15px; border: 1px solid #ddd;
+            font-family: var(--font-body); font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .category-group {
+            background: white; border-radius: 20px; margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); overflow: hidden;
+        }
+        .category-header {
+            padding: 1.5rem 2rem; cursor: pointer; display: flex; justify-content: space-between;
+            align-items: center; background: #fff; transition: background 0.3s; user-select: none;
+        }
+        .category-header:hover { background: #fcf8f4; }
+        .category-header h2 { font-family: var(--font-heading); font-size: 1.4rem; margin: 0; color: var(--color-primary); }
+        .category-content { padding: 0 2rem 1.5rem; display: none; }
+        .category-group.open .category-content { display: block; }
+        .category-group.open .category-header { border-bottom: 1px solid #f0f0f0; }
+        .chevron {
+            width: 10px; height: 10px; border-top: 2px solid var(--color-primary);
+            border-right: 2px solid var(--color-primary); transform: rotate(135deg); transition: transform 0.3s;
+        }
+        .category-group.open .chevron { transform: rotate(-45deg); }
+
+        .log-table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 1rem; border-bottom: 1px solid #f0f0f0; }
+        th { font-family: var(--font-heading); color: var(--color-primary); font-size: 1rem; cursor: pointer; }
+        .sort-icon { font-size: 0.8rem; margin-left: 5px; opacity: 0.5; }
+        tr:hover { background: #fafafa; }
+        .badge { padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .badge-yes { background: #e6fffa; color: #2d6a4f; }
+        .badge-no { background: #fff5f5; color: #c53030; }
+        .badge-none { background: #f7fafc; color: #4a5568; }
+
+        .btn-clear {
+            background: #fff5f5; color: #c53030; border: 1px solid #feb2b2;
+            padding: 0.5rem 1rem; border-radius: 10px; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-clear:hover { background: #feb2b2; color: white; }
+    </style>
+</head>
+<body>
+    <div id="sparkles-container"></div>
+    <div class="admin-page">
+        <div class="admin-header fade-in">
+            <div>
+                <h1 style="font-family: var(--font-heading); color: var(--color-secondary);">RSVP Logs Dashboard</h1>
+                <p>Welcome, Admin Joms</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button id="clear-logs" class="btn-clear">Clear Data</button>
+                <button onclick="window.location.href='index.html'" class="btn-secondary">Logout</button>
+            </div>
+        </div>
+
+        <div class="stats-grid fade-in" style="animation-delay: 0.2s;">
+            <div class="stat-card"><h3>Total Guests</h3><p id="stat-total">0</p></div>
+            <div class="stat-card"><h3>Responded</h3><p id="stat-responded">0</p></div>
+            <div class="stat-card"><h3>Attending</h3><p id="stat-attending" style="color: #2d6a4f;">0</p></div>
+            <div class="stat-card"><h3>Bringing Car</h3><p id="stat-car">0</p></div>
+        </div>
+
+        <div class="controls-row fade-in" style="animation-delay: 0.3s;">
+            <div class="search-container"><input type="text" id="guest-search" class="search-input" placeholder="Search guest name..."></div>
+        </div>
+
+        <div id="category-logs-container" class="fade-in" style="animation-delay: 0.4s;"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://qbhcgffxveyyjkpplyui.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFiaGNnZmZ4dmV5eWprcHBseXVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3NDA5NDIsImV4cCI6MjA5MzMxNjk0Mn0.G767Fw_ueZpEDo5mByvxVy07AyASA-kMdTnoswG23MQ';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const GUEST_DATABASE = {
+            "Gilda Mendoza": { category: "Lola" }, "Noemi Nacion": { category: "Lola" }, "Ana Lisa Dimingo": { category: "Lola" },
+            "Noeda Cañon": { category: "Lola" }, "Nerry Bernardo": { category: "Lola" }, "Agnes Nacion": { category: "Lola" },
+            "Jose Mendoza": { category: "Lolo" }, "Noriel Bernardo": { category: "Lolo" }, "Zaldy Cañon": { category: "Lolo" },
+            "Melissa Mendoza": { category: "Tita" }, "Jovelyn Martirez": { category: "Tita" }, "Henny Tagle": { category: "Tita" },
+            "Jona Beltran": { category: "Tita" }, "Rochel Bautista": { category: "Tita" }, "Janine Farmis": { category: "Tita" },
+            "Lisa Nacion": { category: "Tita" }, "Mark Garais": { category: "Tito" }, "Jake Cañon": { category: "Tito" },
+            "Shane Tagle": { category: "Ate" }, "Justine Eliza Nacion": { category: "Ate" }, "Mara Garais": { category: "Ate" },
+            "Teo Tagle": { category: "Kuya" }, "Gypsy Kaye Pineda": { category: "Ninang" }, "April Nacion": { category: "Ninang" }, "Jonalyn Nacion": { category: "Ninang" },
+            "Mary Jane Nacion": { category: "Ninang" }, "Joice Nacion": { category: "Ninang" }, "Rialyn Baarde": { category: "Ninang" },
+            "Jezel Lopez Bertanico": { category: "Ninang" }, "Nicole Canon": { category: "Ninang" }, "Maureen Bernardo": { category: "Ninang" },
+            "Shiela Tagle": { category: "Ninang" }, "Camille Leodones": { category: "Ninang" }, "Louise Mae Tolentino": { category: "Ninang" },
+            "Laudette Alvarez": { category: "Ninang" }, "Maricris Gelsano": { category: "Ninang" }, "Marimar Quiazon": { category: "Ninang" },
+            "Rho-Ann Paloma": { category: "Ninang" }, "Romina Medel": { category: "Ninang" }, "Charise Payawal": { category: "Ninang" },
+            "Josephine Mendoza": { category: "Ninang" }, "Nikki Raynera": { category: "Ninang" }, "Camilla Berbano": { category: "Ninang" },
+            "Mike Blacer": { category: "Ninang" }, "Jeric Nacion": { category: "Ninong" }, "Joseph Mendoza": { category: "Ninong" },
+            "Kurt Nacion": { category: "Ninong" }, "Jc Canon": { category: "Ninong" }, "Nathaniel Bernardo": { category: "Ninong" },
+            "Ryan Francis Nacion": { category: "Ninong" }, "Romulo Ian Nacion": { category: "Ninong" }, "James Tagle": { category: "Ninong" },
+            "Karlo Quesada": { category: "Ninong" }, "Cedric Nacion": { category: "Ninong" }, "Sammy Buendia": { category: "Ninong" },
+            "John Christoffer Tolentino": { category: "Ninong" }, "Eleazar Ang": { category: "Ninong" }, "Arnold Denosta": { category: "Ninong" }
+        };
+
+        let currentSearch = "";
+        let currentSort = { column: 'name', direction: 'asc' };
+
+        function getAttendingPriority(status) {
+            if (status === 'Yes') return 1;
+            if (!status) return 2;
+            return 3;
+        }
+
+        async function renderLogs() {
+            const { data: rsvpRows, error } = await _supabase.from('rsvps').select('*');
+            if (error) {
+                console.error('Fetch Error:', error);
+                return;
+            }
+
+            const rsvpData = {};
+            rsvpRows.forEach(row => {
+                rsvpData[row.guest_name] = row;
+            });
+
+            const container = document.getElementById('category-logs-container');
+            container.innerHTML = '';
+            const categories = {};
+            let total = 0, responded = 0, attendingCount = 0, carCount = 0;
+
+            Object.keys(GUEST_DATABASE).forEach(name => {
+                const guest = GUEST_DATABASE[name];
+                const rsvp = rsvpData[name];
+                total++;
+                if (rsvp) {
+                    responded++;
+                    if (rsvp.attending === 'Yes') { attendingCount++; if (rsvp.car === 'Yes') carCount++; }
+                }
+                if (currentSearch && !name.toLowerCase().includes(currentSearch.toLowerCase())) return;
+                if (!categories[guest.category]) categories[guest.category] = [];
+                categories[guest.category].push({
+                    name, category: guest.category, attending: rsvp?.attending,
+                    car: rsvp?.car, wish: rsvp?.wish, timestamp: rsvp?.created_at ? new Date(rsvp.created_at).toLocaleString() : null
+                });
+            });
+
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-responded').innerText = responded;
+            document.getElementById('stat-attending').innerText = attendingCount;
+            document.getElementById('stat-car').innerText = carCount;
+
+            Object.keys(categories).sort().forEach(catName => {
+                const guests = categories[catName];
+                guests.sort((a, b) => {
+                    let vA = a[currentSort.column] || "", vB = b[currentSort.column] || "";
+                    if (currentSort.column === 'attending') { vA = getAttendingPriority(a.attending); vB = getAttendingPriority(b.attending); }
+                    return (vA < vB ? -1 : vA > vB ? 1 : 0) * (currentSort.direction === 'asc' ? 1 : -1);
+                });
+
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'category-group' + (currentSearch ? ' open' : '');
+                groupDiv.innerHTML = `
+                    <div class="category-header"><h2>${catName} (${guests.length})</h2><div class="chevron"></div></div>
+                    <div class="category-content"><div class="log-table-container"><table><thead><tr>
+                        <th onclick="changeSort('name')">Name ${getSortIcon('name')}</th>
+                        <th onclick="changeSort('attending')">Attending ${getSortIcon('attending')}</th>
+                        <th onclick="changeSort('car')">Car ${getSortIcon('car')}</th>
+                        <th>Wish</th>
+                        <th onclick="changeSort('timestamp')">Date ${getSortIcon('timestamp')}</th>
+                    </tr></thead><tbody>
+                        ${guests.map(g => `<tr>
+                            <td><strong>${g.name}</strong></td>
+                            <td>${renderBadge(g.attending)}</td>
+                            <td>${g.car || (g.attending === 'Yes' ? 'No' : '-')}</td>
+                            <td style="font-size: 0.9rem; max-width: 250px; font-style: italic;">${g.wish || '-'}</td>
+                            <td style="font-size: 0.8rem; opacity: 0.7;">${g.timestamp || '-'}</td>
+                        </tr>`).join('')}
+                    </tbody></table></div></div>`;
+                groupDiv.querySelector('.category-header').addEventListener('click', () => groupDiv.classList.toggle('open'));
+                container.appendChild(groupDiv);
+            });
+        }
+
+        function renderBadge(att) {
+            if (att === 'Yes') return '<span class="badge badge-yes">Coming</span>';
+            if (att === 'No') return '<span class="badge badge-no">Not Coming</span>';
+            return '<span class="badge badge-none">Pending</span>';
+        }
+
+        function getSortIcon(col) {
+            if (currentSort.column !== col) return '↕';
+            return currentSort.direction === 'asc' ? '↑' : '↓';
+        }
+
+        function changeSort(col) {
+            if (currentSort.column === col) currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            else { currentSort.column = col; currentSort.direction = 'asc'; }
+            renderLogs();
+        }
+
+        document.getElementById('guest-search').addEventListener('input', (e) => { currentSearch = e.target.value; renderLogs(); });
+        document.getElementById('clear-logs').addEventListener('click', async () => {
+            if (confirm('Clear all data from database?')) {
+                const { error } = await _supabase.from('rsvps').delete().neq('guest_name', '');
+                if (error) alert('Error clearing data: ' + error.message);
+                else renderLogs();
+            }
+        });
+        renderLogs();
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
