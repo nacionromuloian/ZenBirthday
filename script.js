@@ -179,7 +179,7 @@ const GUEST_DATABASE = {
     "Zaldy Cañon": { surname: "Cañon", category: "Lolo" },
     // Tita
     "Melissa Mendoza": { surname: "Mendoza", category: "Tita" },
-    "Jovelyn Martirez": { surname: "Martirez", category: "Tita" },
+    "Jovilyn Martirez": { surname: "Martirez", category: "Tita" },
     "Henny Tagle": { surname: "Tagle", category: "Tita" },
     "Jona Beltran": { surname: "Beltran", category: "Tita" },
     "Rochel Bautista": { surname: "Bautista", category: "Tita" },
@@ -218,7 +218,7 @@ const GUEST_DATABASE = {
     "Camilla Berbano": { surname: "Berbano", category: "Ninang" },
     "Mike Blacer": { surname: "Blacer", category: "Ninang" },
     // Ninong
-    "Jeric Nacion": { surname: "Nacion", category: "Ninong" },
+    "Jerie Nacion": { surname: "Nacion", category: "Ninong" },
     "Joseph Mendoza": { surname: "Mendoza", category: "Ninong" },
     "Kurt Nacion": { surname: "Nacion", category: "Ninong" },
     "Jc Canon": { surname: "Canon", category: "Ninong" },
