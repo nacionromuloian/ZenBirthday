@@ -193,7 +193,7 @@ const GUEST_DATABASE = {
     "Justine Eliza Nacion": { surname: "Nacion", category: "Ate" },
     "Mara Garais": { surname: "Garais", category: "Ate" },
     // Kuya
-    "Kuya": { surname: "Tagle", category: "Kuya" },
+    "Teo Tagle": { surname: "Tagle", category: "Kuya" },
     // Ninang
     "Gypsy Kaye Pineda": { surname: "Pineda", category: "Ninang" },
     "April Nacion": { surname: "Nacion", category: "Ninang" },
