@@ -177,6 +177,7 @@ const GUEST_DATABASE = {
     "Jose Mendoza": { surname: "Mendoza", category: "Lolo" },
     "Noriel Bernardo": { surname: "Bernardo", category: "Lolo" },
     "Zaldy Cañon": { surname: "Cañon", category: "Lolo" },
+    "Jaffy Jurado": { surname: "Jurado", category: "Lolo" },
     // Tita
     "Melissa Mendoza": { surname: "Mendoza", category: "Tita" },
     "Jovilyn Martirez": { surname: "Martirez", category: "Tita" },
@@ -194,6 +195,7 @@ const GUEST_DATABASE = {
     "Jake Cañon": { surname: "Cañon", category: "Tito" },
     "Ariel Acosta": { surname: "Acosta", category: "Tito" },
     "Rhad Oliveros": { surname: "Oliveros", category: "Tito" },
+    "Kingbezar ezar": { surname: "ezar", category: "Tito" },
     // Ate
     "Shane Tagle": { surname: "Tagle", category: "Ate" },
     "Justine Eliza Nacion": { surname: "Nacion", category: "Ate" },
