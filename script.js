@@ -185,9 +185,15 @@ const GUEST_DATABASE = {
     "Rochel Bautista": { surname: "Bautista", category: "Tita" },
     "Janine Farmis": { surname: "Farmis", category: "Tita" },
     "Lisa Nacion": { surname: "Nacion", category: "Tita" },
+    "Shai Rocero": { surname: "Rocero", category: "Tita" },
+    "Mary Grace Mendoza": { surname: "Mendoza", category: "Tita" },
+    "Joyce Ortega": { surname: "Ortega", category: "Tita" },
+    "Aerylle Diez": { surname: "Diez", category: "Tita" },
     // Tito
     "Mark Garais": { surname: "Garais", category: "Tito" },
     "Jake Cañon": { surname: "Cañon", category: "Tito" },
+    "Ariel Acosta": { surname: "Acosta", category: "Tito" },
+    "Rhad Oliveros": { surname: "Oliveros", category: "Tito" },
     // Ate
     "Shane Tagle": { surname: "Tagle", category: "Ate" },
     "Justine Eliza Nacion": { surname: "Nacion", category: "Ate" },
@@ -217,6 +223,9 @@ const GUEST_DATABASE = {
     "Nikki Raynera": { surname: "Raynera", category: "Ninang" },
     "Camilla Berbano": { surname: "Berbano", category: "Ninang" },
     "Mike Blacer": { surname: "Blacer", category: "Ninang" },
+    "Iralyn Mendones": { surname: "Mendones", category: "Ninang" },
+    "Krisha Banez": { surname: "Banez", category: "Ninang" },
+    "Nelsi Asperas": { surname: "Asperas", category: "Ninang" },
     // Ninong
     "Jerie Nacion": { surname: "Nacion", category: "Ninong" },
     "Joseph Mendoza": { surname: "Mendoza", category: "Ninong" },
@@ -231,7 +240,15 @@ const GUEST_DATABASE = {
     "Sammy Buendia": { surname: "Buendia", category: "Ninong" },
     "John Christoffer Tolentino": { surname: "Tolentino", category: "Ninong" },
     "Eleazar Ang": { surname: "Ang", category: "Ninong" },
-    "Arnold Denosta": { surname: "Denosta", category: "Ninong" }
+    "Arnold Denosta": { surname: "Denosta", category: "Ninong" },
+    "Boss bam": { surname: "bam", category: "Ninong" },
+    "Prince babar": { surname: "babar", category: "Ninong" },
+    "Pj ezar": { surname: "ezar", category: "Ninong" },
+    "Jec mendoza": { surname: "mendoza", category: "Ninong" },
+    "Toby yañga": { surname: "yañga", category: "Ninong" },
+    "Mark Benedict Cruz": { surname: "Cruz", category: "Ninong" },
+    "JR Habitan": { surname: "Habitan", category: "Ninong" },
+    "Tevince Cludel": { surname: "Cludel", category: "Ninong" }
 };
 
 const verificationForm = document.getElementById('verification-form');
