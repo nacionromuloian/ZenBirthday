@@ -197,7 +197,6 @@ const GUEST_DATABASE = {
     // Ate
     "Shane Tagle": { surname: "Tagle", category: "Ate" },
     "Justine Eliza Nacion": { surname: "Nacion", category: "Ate" },
-    "Mara Garais": { surname: "Garais", category: "Ate" },
     // Kuya
     "Teo Tagle": { surname: "Tagle", category: "Kuya" },
     // Ninang
