@@ -268,16 +268,33 @@ if (verificationForm) {
 
         let verifiedGuest = null;
         let guestCategory = "";
+        let prefixGuest = null;
+        let prefixGuestCategory = "";
 
         for (const [fullName, data] of Object.entries(GUEST_DATABASE)) {
-            // Check if the entered first name matches the start of the full name in the DB
-            const firstNameMatch = fullName.toLowerCase().startsWith(enteredFirstname);
-            
-            if (firstNameMatch && data.surname.toLowerCase() === enteredSurname) {
+            if (data.surname.toLowerCase() !== enteredSurname) continue;
+
+            const givenName = fullName
+                .slice(0, fullName.length - data.surname.length)
+                .trim()
+                .toLowerCase();
+
+            // Prefer exact given-name matches before falling back to prefix matches.
+            if (givenName === enteredFirstname) {
                 verifiedGuest = fullName;
                 guestCategory = data.category;
                 break;
             }
+
+            if (!prefixGuest && givenName.startsWith(enteredFirstname)) {
+                prefixGuest = fullName;
+                prefixGuestCategory = data.category;
+            }
+        }
+
+        if (!verifiedGuest && prefixGuest) {
+            verifiedGuest = prefixGuest;
+            guestCategory = prefixGuestCategory;
         }
 
         if (verifiedGuest) {
