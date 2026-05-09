@@ -98,11 +98,8 @@
     </div>
 
     <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://qbhcgffxveyyjkpplyui.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFiaGNnZmZ4dmV5eWprcHBseXVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3NDA5NDIsImV4cCI6MjA5MzMxNjk0Mn0.G767Fw_ueZpEDo5mByvxVy07AyASA-kMdTnoswG23MQ';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const API_URL = '/api/rsvps';
 
         const urlParams = new URLSearchParams(window.location.search);
         const guestName = urlParams.get('name');
@@ -123,17 +120,23 @@
         let rsvpState = { attending: null, car: null };
 
         async function saveRSVP(attending, car = null, wish = "") {
-            const { data, error } = await _supabase
-                .from('rsvps')
-                .upsert({ 
-                    guest_name: guestName, 
-                    category: guestCategory, 
-                    attending: attending, 
-                    car: car, 
-                    wish: wish 
-                }, { onConflict: 'guest_name' });
-            
-            if (error) console.error('Supabase Error:', error);
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        guest_name: guestName, 
+                        category: guestCategory, 
+                        attending: attending, 
+                        car: car, 
+                        wish: wish 
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to save RSVP');
+            } catch (error) {
+                console.error('API Error:', error);
+            }
         }
 
         // Attend Yes

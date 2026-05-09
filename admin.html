@@ -128,11 +128,8 @@
         <div id="category-logs-container" class="fade-in" style="animation-delay: 0.4s;"></div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://qbhcgffxveyyjkpplyui.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFiaGNnZmZ4dmV5eWprcHBseXVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3NDA5NDIsImV4cCI6MjA5MzMxNjk0Mn0.G767Fw_ueZpEDo5mByvxVy07AyASA-kMdTnoswG23MQ';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const API_URL = '/api/rsvps';
 
         const GUEST_DATABASE = {
             "Gilda Mendoza": { category: "Lola" }, "Noemi Nacion": { category: "Lola" }, "Ana Lisa Dimingo": { category: "Lola" },
@@ -174,73 +171,74 @@
         }
 
         async function renderLogs() {
-            const { data: rsvpRows, error } = await _supabase.from('rsvps').select('*');
-            if (error) {
+            try {
+                const response = await fetch(API_URL);
+                const rsvpRows = await response.json();
+                
+                const rsvpData = {};
+                rsvpRows.forEach(row => {
+                    rsvpData[row.guest_name] = row;
+                });
+
+                const container = document.getElementById('category-logs-container');
+                container.innerHTML = '';
+                const categories = {};
+                let total = 0, responded = 0, attendingCount = 0, carCount = 0;
+
+                Object.keys(GUEST_DATABASE).forEach(name => {
+                    const guest = GUEST_DATABASE[name];
+                    const rsvp = rsvpData[name];
+                    total++;
+                    if (rsvp) {
+                        responded++;
+                        if (rsvp.attending === 'Yes') { attendingCount++; if (rsvp.car === 'Yes') carCount++; }
+                    }
+                    if (currentSearch && !name.toLowerCase().includes(currentSearch.toLowerCase())) return;
+                    if (!categories[guest.category]) categories[guest.category] = [];
+                    categories[guest.category].push({
+                        name, category: guest.category, attending: rsvp?.attending,
+                        car: rsvp?.car, wish: rsvp?.wish, timestamp: rsvp?.created_at ? new Date(rsvp.created_at).toLocaleString() : null
+                    });
+                });
+
+                document.getElementById('stat-total').innerText = total;
+                document.getElementById('stat-responded').innerText = responded;
+                document.getElementById('stat-attending').innerText = attendingCount;
+                document.getElementById('stat-car').innerText = carCount;
+
+                Object.keys(categories).sort().forEach(catName => {
+                    const guests = categories[catName];
+                    guests.sort((a, b) => {
+                        let vA = a[currentSort.column] || "", vB = b[currentSort.column] || "";
+                        if (currentSort.column === 'attending') { vA = getAttendingPriority(a.attending); vB = getAttendingPriority(b.attending); }
+                        return (vA < vB ? -1 : vA > vB ? 1 : 0) * (currentSort.direction === 'asc' ? 1 : -1);
+                    });
+
+                    const groupDiv = document.createElement('div');
+                    groupDiv.className = 'category-group' + (currentSearch ? ' open' : '');
+                    groupDiv.innerHTML = `
+                        <div class="category-header"><h2>${catName} (${guests.length})</h2><div class="chevron"></div></div>
+                        <div class="category-content"><div class="log-table-container"><table><thead><tr>
+                            <th onclick="changeSort('name')">Name ${getSortIcon('name')}</th>
+                            <th onclick="changeSort('attending')">Attending ${getSortIcon('attending')}</th>
+                            <th onclick="changeSort('car')">Car ${getSortIcon('car')}</th>
+                            <th>Wish</th>
+                            <th onclick="changeSort('timestamp')">Date ${getSortIcon('timestamp')}</th>
+                        </tr></thead><tbody>
+                            ${guests.map(g => `<tr>
+                                <td><strong>${g.name}</strong></td>
+                                <td>${renderBadge(g.attending)}</td>
+                                <td>${g.car || (g.attending === 'Yes' ? 'No' : '-')}</td>
+                                <td style="font-size: 0.9rem; max-width: 250px; font-style: italic;">${g.wish || '-'}</td>
+                                <td style="font-size: 0.8rem; opacity: 0.7;">${g.timestamp || '-'}</td>
+                            </tr>`).join('')}
+                        </tbody></table></div></div>`;
+                    groupDiv.querySelector('.category-header').addEventListener('click', () => groupDiv.classList.toggle('open'));
+                    container.appendChild(groupDiv);
+                });
+            } catch (error) {
                 console.error('Fetch Error:', error);
-                return;
             }
-
-            const rsvpData = {};
-            rsvpRows.forEach(row => {
-                rsvpData[row.guest_name] = row;
-            });
-
-            const container = document.getElementById('category-logs-container');
-            container.innerHTML = '';
-            const categories = {};
-            let total = 0, responded = 0, attendingCount = 0, carCount = 0;
-
-            Object.keys(GUEST_DATABASE).forEach(name => {
-                const guest = GUEST_DATABASE[name];
-                const rsvp = rsvpData[name];
-                total++;
-                if (rsvp) {
-                    responded++;
-                    if (rsvp.attending === 'Yes') { attendingCount++; if (rsvp.car === 'Yes') carCount++; }
-                }
-                if (currentSearch && !name.toLowerCase().includes(currentSearch.toLowerCase())) return;
-                if (!categories[guest.category]) categories[guest.category] = [];
-                categories[guest.category].push({
-                    name, category: guest.category, attending: rsvp?.attending,
-                    car: rsvp?.car, wish: rsvp?.wish, timestamp: rsvp?.created_at ? new Date(rsvp.created_at).toLocaleString() : null
-                });
-            });
-
-            document.getElementById('stat-total').innerText = total;
-            document.getElementById('stat-responded').innerText = responded;
-            document.getElementById('stat-attending').innerText = attendingCount;
-            document.getElementById('stat-car').innerText = carCount;
-
-            Object.keys(categories).sort().forEach(catName => {
-                const guests = categories[catName];
-                guests.sort((a, b) => {
-                    let vA = a[currentSort.column] || "", vB = b[currentSort.column] || "";
-                    if (currentSort.column === 'attending') { vA = getAttendingPriority(a.attending); vB = getAttendingPriority(b.attending); }
-                    return (vA < vB ? -1 : vA > vB ? 1 : 0) * (currentSort.direction === 'asc' ? 1 : -1);
-                });
-
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'category-group' + (currentSearch ? ' open' : '');
-                groupDiv.innerHTML = `
-                    <div class="category-header"><h2>${catName} (${guests.length})</h2><div class="chevron"></div></div>
-                    <div class="category-content"><div class="log-table-container"><table><thead><tr>
-                        <th onclick="changeSort('name')">Name ${getSortIcon('name')}</th>
-                        <th onclick="changeSort('attending')">Attending ${getSortIcon('attending')}</th>
-                        <th onclick="changeSort('car')">Car ${getSortIcon('car')}</th>
-                        <th>Wish</th>
-                        <th onclick="changeSort('timestamp')">Date ${getSortIcon('timestamp')}</th>
-                    </tr></thead><tbody>
-                        ${guests.map(g => `<tr>
-                            <td><strong>${g.name}</strong></td>
-                            <td>${renderBadge(g.attending)}</td>
-                            <td>${g.car || (g.attending === 'Yes' ? 'No' : '-')}</td>
-                            <td style="font-size: 0.9rem; max-width: 250px; font-style: italic;">${g.wish || '-'}</td>
-                            <td style="font-size: 0.8rem; opacity: 0.7;">${g.timestamp || '-'}</td>
-                        </tr>`).join('')}
-                    </tbody></table></div></div>`;
-                groupDiv.querySelector('.category-header').addEventListener('click', () => groupDiv.classList.toggle('open'));
-                container.appendChild(groupDiv);
-            });
         }
 
         function renderBadge(att) {
@@ -263,9 +261,13 @@
         document.getElementById('guest-search').addEventListener('input', (e) => { currentSearch = e.target.value; renderLogs(); });
         document.getElementById('clear-logs').addEventListener('click', async () => {
             if (confirm('Clear all data from database?')) {
-                const { error } = await _supabase.from('rsvps').delete().neq('guest_name', '');
-                if (error) alert('Error clearing data: ' + error.message);
-                else renderLogs();
+                try {
+                    const response = await fetch(API_URL, { method: 'DELETE' });
+                    if (!response.ok) throw new Error('Failed to clear data');
+                    renderLogs();
+                } catch (error) {
+                    alert('Error clearing data: ' + error.message);
+                }
             }
         });
         renderLogs();
