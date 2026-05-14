@@ -193,7 +193,6 @@ const GUEST_DATABASE = {
     // Tito
     "Mark Garais": { surname: "Garais", category: "Tito" },
     "Jake Cañon": { surname: "Cañon", category: "Tito" },
-    "Ariel Acosta": { surname: "Acosta", category: "Tito" },
     "Rhad Oliveros": { surname: "Oliveros", category: "Tito" },
     "Kingbezar ezar": { surname: "ezar", category: "Tito" },
     // Ate
@@ -242,6 +241,7 @@ const GUEST_DATABASE = {
     "John Christoffer Tolentino": { surname: "Tolentino", category: "Ninong" },
     "Eleazar Ang": { surname: "Ang", category: "Ninong" },
     "Arnold Denosta": { surname: "Denosta", category: "Ninong" },
+    "Ariel Acosta": { surname: "Acosta", category: "Ninong" },
     "Boss bam": { surname: "bam", category: "Ninong" },
     "Prince babar": { surname: "babar", category: "Ninong" },
     "Pj ezar": { surname: "ezar", category: "Ninong" },
