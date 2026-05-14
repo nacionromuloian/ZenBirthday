@@ -178,6 +178,10 @@ const GUEST_DATABASE = {
     "Noriel Bernardo": { surname: "Bernardo", category: "Lolo" },
     "Zaldy Cañon": { surname: "Cañon", category: "Lolo" },
     "Jaffy Jurado": { surname: "Jurado", category: "Lolo" },
+    // Mommy
+    "Jennifer Mendoza": { surname: "Mendoza", category: "Mommy" },
+    // Daddy
+    "Jomel Nacion": { surname: "Nacion", category: "Daddy" },
     // Tita
     "Melissa Mendoza": { surname: "Mendoza", category: "Tita" },
     "Jovilyn Martirez": { surname: "Martirez", category: "Tita" },

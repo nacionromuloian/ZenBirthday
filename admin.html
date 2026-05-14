@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/jpeg" href="favicon.jpg">
     <link rel="apple-touch-icon" href="favicon.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <style>
         body { overflow: auto; }
         .admin-page {
@@ -98,6 +99,11 @@
             padding: 0.5rem 1rem; border-radius: 10px; cursor: pointer; transition: all 0.3s;
         }
         .btn-clear:hover { background: #feb2b2; color: white; }
+        .btn-download {
+            background: #eef7ff; color: #24507a; border: 1px solid #b6d4fe;
+            padding: 0.5rem 1rem; border-radius: 10px; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-download:hover { background: #b6d4fe; color: white; }
     </style>
 </head>
 <body>
@@ -109,6 +115,7 @@
                 <p>Welcome, Admin Joms</p>
             </div>
             <div style="display: flex; gap: 1rem;">
+                <button id="download-pdf" class="btn-download">Download PDF</button>
                 <button id="clear-logs" class="btn-clear">Clear Data</button>
                 <button onclick="window.location.href='index.html'" class="btn-secondary">Logout</button>
             </div>
@@ -136,6 +143,7 @@
             "Noeda Cañon": { category: "Lola" }, "Nerry Bernardo": { category: "Lola" }, "Agnes Nacion": { category: "Lola" },
             "Jose Mendoza": { category: "Lolo" }, "Noriel Bernardo": { category: "Lolo" }, "Zaldy Cañon": { category: "Lolo" },
             "Jaffy Jurado": { category: "Lolo" },
+            "Jennifer Mendoza": { category: "Mommy" }, "Jomel Nacion": { category: "Daddy" },
             "Melissa Mendoza": { category: "Tita" }, "Jovilyn Martirez": { category: "Tita" }, "Henny Tagle": { category: "Tita" },
             "Jona Beltran": { category: "Tita" }, "Rochel Bautista": { category: "Tita" }, "Janine Farmis": { category: "Tita" },
             "Lisa Nacion": { category: "Tita" }, "Shai Rocero": { category: "Tita" }, "Mary Grace Mendoza": { category: "Tita" },
@@ -164,6 +172,7 @@
 
         let currentSearch = "";
         let currentSort = { column: 'name', direction: 'asc' };
+        let exportRows = [];
 
         function getAttendingPriority(status) {
             if (status === 'Yes') return 1;
@@ -171,35 +180,127 @@
             return 3;
         }
 
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function buildGuestRows(rsvpRows) {
+            const rsvpData = {};
+            rsvpRows.forEach(row => {
+                rsvpData[row.guest_name] = row;
+            });
+
+            return Object.keys(GUEST_DATABASE).map(name => {
+                const guest = GUEST_DATABASE[name];
+                const rsvp = rsvpData[name];
+
+                return {
+                    name,
+                    category: guest.category,
+                    attending: rsvp?.attending || '',
+                    car: rsvp?.car || '',
+                    wish: rsvp?.wish || '',
+                    timestamp: rsvp?.created_at ? new Date(rsvp.created_at).toLocaleString() : ''
+                };
+            });
+        }
+
+        function downloadPdfReport() {
+            if (!window.jspdf?.jsPDF) {
+                alert('PDF library failed to load. Please refresh and try again.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+            const margin = 40;
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const usableWidth = pageWidth - (margin * 2);
+            const categoryWidth = 90;
+            const nameWidth = 170;
+            const wishWidth = usableWidth - categoryWidth - nameWidth;
+            const lineHeight = 16;
+            let y = margin;
+
+            const rows = [...exportRows].sort((a, b) => {
+                const categoryCompare = a.category.localeCompare(b.category);
+                return categoryCompare !== 0 ? categoryCompare : a.name.localeCompare(b.name);
+            });
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text("Zen Hardin's Birthday Guest Wishes", margin, y);
+            y += 24;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.text(`Generated: ${new Date().toLocaleString()}`, margin, y);
+            y += 22;
+
+            const drawHeader = () => {
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(11);
+                doc.text('Category', margin, y);
+                doc.text('Name', margin + categoryWidth, y);
+                doc.text('Wish', margin + categoryWidth + nameWidth, y);
+                y += 10;
+                doc.line(margin, y, pageWidth - margin, y);
+                y += 16;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+            };
+
+            drawHeader();
+
+            rows.forEach(row => {
+                const wishLines = doc.splitTextToSize(row.wish || '-', wishWidth);
+                const rowHeight = Math.max(lineHeight, wishLines.length * lineHeight);
+
+                if (y + rowHeight > pageHeight - margin) {
+                    doc.addPage();
+                    y = margin;
+                    drawHeader();
+                }
+
+                doc.text(row.category, margin, y);
+                doc.text(row.name, margin + categoryWidth, y);
+                doc.text(wishLines, margin + categoryWidth + nameWidth, y);
+                y += rowHeight + 8;
+            });
+
+            doc.save('zen-birthday-wishes.pdf');
+        }
+
         async function renderLogs() {
             try {
                 const response = await fetch(API_URL);
                 const rsvpRows = await response.json();
-                
-                const rsvpData = {};
-                rsvpRows.forEach(row => {
-                    rsvpData[row.guest_name] = row;
-                });
+                const allRows = buildGuestRows(rsvpRows);
+                exportRows = allRows;
 
                 const container = document.getElementById('category-logs-container');
                 container.innerHTML = '';
                 const categories = {};
                 let total = 0, responded = 0, attendingCount = 0, carCount = 0;
 
-                Object.keys(GUEST_DATABASE).forEach(name => {
-                    const guest = GUEST_DATABASE[name];
-                    const rsvp = rsvpData[name];
+                allRows.forEach(row => {
                     total++;
-                    if (rsvp) {
+                    if (row.attending) {
                         responded++;
-                        if (rsvp.attending === 'Yes') { attendingCount++; if (rsvp.car === 'Yes') carCount++; }
+                        if (row.attending === 'Yes') {
+                            attendingCount++;
+                            if (row.car === 'Yes') carCount++;
+                        }
                     }
-                    if (currentSearch && !name.toLowerCase().includes(currentSearch.toLowerCase())) return;
-                    if (!categories[guest.category]) categories[guest.category] = [];
-                    categories[guest.category].push({
-                        name, category: guest.category, attending: rsvp?.attending,
-                        car: rsvp?.car, wish: rsvp?.wish, timestamp: rsvp?.created_at ? new Date(rsvp.created_at).toLocaleString() : null
-                    });
+                    if (currentSearch && !row.name.toLowerCase().includes(currentSearch.toLowerCase())) return;
+                    if (!categories[row.category]) categories[row.category] = [];
+                    categories[row.category].push(row);
                 });
 
                 document.getElementById('stat-total').innerText = total;
@@ -227,11 +328,11 @@
                             <th onclick="changeSort('timestamp')">Date ${getSortIcon('timestamp')}</th>
                         </tr></thead><tbody>
                             ${guests.map(g => `<tr>
-                                <td><strong>${g.name}</strong></td>
+                                <td><strong>${escapeHtml(g.name)}</strong></td>
                                 <td>${renderBadge(g.attending)}</td>
-                                <td>${g.car || (g.attending === 'Yes' ? 'No' : '-')}</td>
-                                <td style="font-size: 0.9rem; max-width: 250px; font-style: italic;">${g.wish || '-'}</td>
-                                <td style="font-size: 0.8rem; opacity: 0.7;">${g.timestamp || '-'}</td>
+                                <td>${escapeHtml(g.car || (g.attending === 'Yes' ? 'No' : '-'))}</td>
+                                <td style="font-size: 0.9rem; max-width: 250px; font-style: italic;">${escapeHtml(g.wish || '-')}</td>
+                                <td style="font-size: 0.8rem; opacity: 0.7;">${escapeHtml(g.timestamp || '-')}</td>
                             </tr>`).join('')}
                         </tbody></table></div></div>`;
                     groupDiv.querySelector('.category-header').addEventListener('click', () => groupDiv.classList.toggle('open'));
@@ -260,6 +361,7 @@
         }
 
         document.getElementById('guest-search').addEventListener('input', (e) => { currentSearch = e.target.value; renderLogs(); });
+        document.getElementById('download-pdf').addEventListener('click', downloadPdfReport);
         document.getElementById('clear-logs').addEventListener('click', async () => {
             if (confirm('Clear all data from database?')) {
                 try {
