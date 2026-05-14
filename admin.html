@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/jpeg" href="favicon.jpg">
     <link rel="apple-touch-icon" href="favicon.jpg">
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
     <style>
         body { overflow: auto; }
         .admin-page {
@@ -104,6 +104,54 @@
             padding: 0.5rem 1rem; border-radius: 10px; cursor: pointer; transition: all 0.3s;
         }
         .btn-download:hover { background: #b6d4fe; color: white; }
+        .pdf-export-sheet {
+            width: 794px;
+            background: white;
+            color: #111;
+            padding: 36px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .pdf-export-sheet h1 {
+            margin: 0 0 12px;
+            font-size: 28px;
+            line-height: 1.2;
+            color: #000;
+        }
+        .pdf-export-sheet .meta {
+            margin: 0 0 20px;
+            font-size: 14px;
+            color: #222;
+        }
+        .pdf-export-sheet table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        .pdf-export-sheet th,
+        .pdf-export-sheet td {
+            padding: 10px 12px 10px 0;
+            border-bottom: 1px solid #d9d9d9;
+            vertical-align: top;
+            text-align: left;
+            color: #000;
+        }
+        .pdf-export-sheet th {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .pdf-export-sheet td {
+            font-size: 14px;
+            line-height: 1.45;
+        }
+        .pdf-export-sheet .col-category { width: 16%; }
+        .pdf-export-sheet .col-name { width: 28%; }
+        .pdf-export-sheet .col-wish { width: 56%; }
+        .pdf-export-sheet .wish-cell {
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -211,70 +259,76 @@
         }
 
         function downloadPdfReport() {
-            if (!window.jspdf?.jsPDF) {
+            if (typeof window.html2pdf !== 'function') {
                 alert('PDF library failed to load. Please refresh and try again.');
                 return;
             }
-
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-            const margin = 40;
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
-            const usableWidth = pageWidth - (margin * 2);
-            const categoryWidth = 90;
-            const nameWidth = 170;
-            const wishWidth = usableWidth - categoryWidth - nameWidth;
-            const lineHeight = 16;
-            let y = margin;
 
             const rows = [...exportRows].sort((a, b) => {
                 const categoryCompare = a.category.localeCompare(b.category);
                 return categoryCompare !== 0 ? categoryCompare : a.name.localeCompare(b.name);
             });
 
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(18);
-            doc.text("Zen Hardin's Birthday Guest Wishes", margin, y);
-            y += 24;
+            const exportContainer = document.createElement('div');
+            exportContainer.style.position = 'fixed';
+            exportContainer.style.left = '-99999px';
+            exportContainer.style.top = '0';
 
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(10);
-            doc.text(`Generated: ${new Date().toLocaleString()}`, margin, y);
-            y += 22;
+            const tableRows = rows.map(row => `
+                <tr>
+                    <td>${escapeHtml(row.category)}</td>
+                    <td>${escapeHtml(row.name)}</td>
+                    <td class="wish-cell">${escapeHtml(row.wish || '-')}</td>
+                </tr>
+            `).join('');
 
-            const drawHeader = () => {
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(11);
-                doc.text('Category', margin, y);
-                doc.text('Name', margin + categoryWidth, y);
-                doc.text('Wish', margin + categoryWidth + nameWidth, y);
-                y += 10;
-                doc.line(margin, y, pageWidth - margin, y);
-                y += 16;
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(10);
+            exportContainer.innerHTML = `
+                <div class="pdf-export-sheet">
+                    <h1>Zen Hardin's Birthday Guest Wishes</h1>
+                    <p class="meta">Generated: ${escapeHtml(new Date().toLocaleString())}</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-category">Category</th>
+                                <th class="col-name">Name</th>
+                                <th class="col-wish">Wish</th>
+                            </tr>
+                        </thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                </div>
+            `;
+
+            document.body.appendChild(exportContainer);
+
+            const exportSheet = exportContainer.firstElementChild;
+            const options = {
+                margin: 0,
+                filename: 'zen-birthday-wishes.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff'
+                },
+                jsPDF: {
+                    unit: 'pt',
+                    format: 'a4',
+                    orientation: 'portrait'
+                },
+                pagebreak: { mode: ['css', 'legacy'] }
             };
 
-            drawHeader();
-
-            rows.forEach(row => {
-                const wishLines = doc.splitTextToSize(row.wish || '-', wishWidth);
-                const rowHeight = Math.max(lineHeight, wishLines.length * lineHeight);
-
-                if (y + rowHeight > pageHeight - margin) {
-                    doc.addPage();
-                    y = margin;
-                    drawHeader();
-                }
-
-                doc.text(row.category, margin, y);
-                doc.text(row.name, margin + categoryWidth, y);
-                doc.text(wishLines, margin + categoryWidth + nameWidth, y);
-                y += rowHeight + 8;
-            });
-
-            doc.save('zen-birthday-wishes.pdf');
+            window.html2pdf()
+                .set(options)
+                .from(exportSheet)
+                .save()
+                .catch(() => {
+                    alert('Could not generate PDF. Please try again.');
+                })
+                .finally(() => {
+                    exportContainer.remove();
+                });
         }
 
         async function renderLogs() {
